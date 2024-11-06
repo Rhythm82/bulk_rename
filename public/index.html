@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk File Renamer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-b from-blue-900 via-black to-gray-900 min-h-screen text-white font-mono">
+    <div class="container mx-auto p-6">
+        <div class="bg-blue-800/80 p-8 rounded-lg shadow-2xl">
+            <h1 class="text-3xl font-bold mb-6 text-center text-blue-400">Bulk File Renamer</h1>
+
+            <!-- Folder Path Input and Preview Button -->
+            <div class="flex space-x-4 mb-4">
+                <input type="text" id="folderPath" placeholder="Enter Folder Path" class="w-3/4 p-3 bg-gray-800 text-gray-300 border-2 border-blue-600 rounded-md focus:outline-none focus:border-blue-400">
+                <button id="previewButton" class="w-1/4 py-3 bg-blue-600 hover:bg-blue-500 rounded-md shadow-md font-semibold transition-colors">Preview Files</button>
+            </div>
+
+            <!-- Preview Section (Below Folder Path Input) -->
+            <div id="previewSection" class="mb-4 text-gray-300" style="display: none;">
+                <p class="font-semibold">Preview of Files:</p>
+                <ul id="fileList" class="mt-2 bg-gray-700 p-2 rounded-md max-h-48 overflow-y-auto">
+                    <!-- Previewed files will be listed here -->
+                </ul>
+            </div>
+
+            <!-- Old and New Substring Inputs -->
+            <label for="oldSubstring" class="block text-lg font-semibold text-gray-200 mb-2">Old Substring</label>
+            <input type="text" id="oldSubstring" placeholder="Enter Old Substring" class="w-full p-3 mb-4 bg-gray-800 text-gray-300 border-2 border-blue-600 rounded-md focus:outline-none focus:border-blue-400">
+
+            <label for="newSubstring" class="block text-lg font-semibold text-gray-200 mb-2">New Substring</label>
+            <input type="text" id="newSubstring" placeholder="Enter New Substring" class="w-full p-3 mb-4 bg-gray-800 text-gray-300 border-2 border-blue-600 rounded-md focus:outline-none focus:border-blue-400">
+
+            <!-- Rename Button -->
+            <div class="flex justify-center">
+                <button id="renameButton" class="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-md shadow-md font-semibold transition-colors">Rename Files</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('previewButton').addEventListener('click', async () => {
+            const folderPath = document.getElementById('folderPath').value;
+            const response = await fetch(`/preview?path=${encodeURIComponent(folderPath)}`);
+            const files = await response.json();
+            const fileList = document.getElementById('fileList');
+            const previewSection = document.getElementById('previewSection');
+
+            fileList.innerHTML = '';  // Clear previous list
+
+            if (Array.isArray(files)) {
+                files.forEach(file => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = file;
+                    listItem.classList.add('py-1');
+                    fileList.appendChild(listItem);
+                });
+            } else {
+                fileList.innerHTML = `<li class="text-red-500">${files.error}</li>`;
+            }
+
+            // Show the preview section
+            previewSection.style.display = 'block';
+        });
+
+        document.getElementById('renameButton').addEventListener('click', async () => {
+            const folderPath = document.getElementById('folderPath').value;
+            const oldSubstring = document.getElementById('oldSubstring').value;
+            const newSubstring = document.getElementById('newSubstring').value;
+
+            const response = await fetch('/rename', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: folderPath, oldSubstring, newSubstring })
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+        });
+    </script>
+</body>
+</html>
+

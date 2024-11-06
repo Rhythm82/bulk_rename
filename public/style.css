@@ -1,0 +1,11 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+input::placeholder {
+    color: #cbd5e1;
+}
+
+button:hover {
+    cursor: pointer;
+}

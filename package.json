@@ -1,0 +1,17 @@
+{
+  "name": "bulk-renaming-app",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo 'No build step needed'",
+    "vercel-start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "A bulk file renaming web app",
+  "dependencies": {
+    "bulk-renaming-app": "file:",
+    "express": "^4.21.1"
+  }
+}
